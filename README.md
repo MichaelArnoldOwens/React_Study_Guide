@@ -1,0 +1,54 @@
+## React.Component
+1. Describe mounting component lifecycle
+  - `render()` - required method
+    - examines this.props and this.state and returns a single react element
+    - return null or false to render nothing
+    - *will not be invoked if shouldComponentUpdate() returns false*
+    - should be pure
+  - Mounting
+    - `constructor()`
+      - called before mounting
+      - *if sublclassing, call super(props) first!*
+      - initializes state
+    - `componentWillMount()` - called immediately before mounting, before render
+      - setting state synchronously will not trigger a re-render
+      - *only lifecycle hook called on server rendering*
+    - `render()`
+    - `componentDidMount()` - invoked immediately after component has mounted
+      - init that requires DOM nodes goes here
+      - instantiating network requests goes here
+      - setting state will trigger re-render
+  - Updating
+    - `componentWillReceiveProps(nextProps)` - before mounted components receives new props
+      - compare this.props to nextProps and use this.setState() to handle accordingly
+      - *React may call this when props have not changed*
+      - only called if some component props may update
+      - calling this.setState() generally doesn't trigger this
+    - `shouldComponentUpdate(nextProps, nextState)` - let React know if component's output is affected by current change in state or props
+      - defaults to re-render on every state change
+      - not called on initial render or forceUpdate()
+      - React.PureComponent implements a shallow prop/state comparison
+    - `componentWillUpdate(nextProps, nextState)` - invoked immediately before rendering when new props or state are received
+      - cannot call this.setState() here, use componentWillReceiveProps() instead
+      - *will not be invoked if shouldComponentUpdate() returns false*
+    - `render()`
+    - `componentDidUpdate`(prevProps, prevState) - invoked immediately after updating, not called on initial render
+      - operate on DOM here when component has updated
+      - 'good place to do network requests as long as you compare the current props to previous props (e.g. a network request may not be necessary if the props have not changed)'
+      - *will not be invoked if shouldComponentUpdate() returns false*
+  - Unmounting
+    - `componentWillUnmount()` - invoked before component is unmounted and destroyed
+      - cleanup; invalidating timers, cancelling network requests, cleaning DOM elements that were created
+  - `setState(updater, [callback])` - enqueues changes to component state and triggers re-render unless shouldComponentUpdate returns false
+    - *React does not guarantee that state changes are applied immediately*
+      - reading state immediately after call is a pitfall, use componentDidUpdate() or the setState callback instead
+    - `updater = (prevState, props) => stateChange`
+      - prevState is ref to previous state; do not mutate, build a new object instead
+    - passing an object performs shallow merge
+  - `forceUpdate()` - short circuits `shouldComponentUpdate()` and calls render() directly
+    - still only updates DOM if markup changes
+    - *try and avoid using this*
+  - defaultProps() - sets defaultProps, but does not overwrite null
+
+
+
